@@ -161,12 +161,15 @@ endif
 
 function! rust_doc#get_modules(docs) abort
     let modules = []
+    let pathdelim = has('win32') ? '\\' : '/'
 
     for doc in a:docs
         let paths = s:globpath(doc, '**/index.html')
+        " trailing path sepalator
+        let doc = doc . pathdelim
         let modules += map(paths, "{
                     \   'path' : v:val,
-                    \   'name' : substitute(fnamemodify(v:val, ':h')[strlen(doc) : ], '/', '::', 'g'),
+                    \   'name' : substitute(fnamemodify(v:val, ':h')[strlen(doc) : ], pathdelim, '::', 'g'),
                     \ }")
     endfor
 

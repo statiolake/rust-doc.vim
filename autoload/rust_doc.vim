@@ -22,23 +22,23 @@ function! rust_doc#find_std_doc_dir() abort
     let d = ''
     if g:rust_doc#downloaded_rust_doc_dir !=# '' && isdirectory(g:rust_doc#downloaded_rust_doc_dir)
         let d = g:rust_doc#downloaded_rust_doc_dir
-    endif
-    if executable('rustup')
+    elseif executable('rustup')
         let index_html = substitute(system('rustup doc --path'), '\n$', '', '')
         if !v:shell_error && filereadable(index_html)
             return fnamemodify(index_html, ':h')
         endif
-    endif
-    let toolchains_dir = expand('~/.rustup/toolchains/')
-    if isdirectory(toolchains_dir)
-        let toolchains = s:globpath(toolchains_dir, '*')
-        let dirs = filter(copy(toolchains), 'stridx(v:val, "stable-") >= 0')
-        if empty(dirs)
-            " Fallback to nightly
-            let dirs = filter(toolchains, 'stridx(v:val, "nightly-") >= 0')
-        endif
-        if !empty(dirs)
-            let d = dirs[0]
+    else
+        let toolchains_dir = expand('~/.rustup/toolchains/')
+        if isdirectory(toolchains_dir)
+            let toolchains = s:globpath(toolchains_dir, '*')
+            let dirs = filter(copy(toolchains), 'stridx(v:val, "stable-") >= 0')
+            if empty(dirs)
+                " Fallback to nightly
+                let dirs = filter(toolchains, 'stridx(v:val, "nightly-") >= 0')
+            endif
+            if !empty(dirs)
+                let d = dirs[0]
+            endif
         endif
     endif
     return d . '/share/doc/rust/html/'
@@ -117,11 +117,9 @@ endfunction
 function! rust_doc#get_doc_dirs(hint) abort
     let docs = []
 
-    if g:rust_doc#downloaded_rust_doc_dir !=# ''
-        let d = rust_doc#find_std_doc_dir()
-        if isdirectory(d)
-            let docs += [d]
-        endif
+    let d = rust_doc#find_std_doc_dir()
+    if isdirectory(d)
+        let docs += [d]
     endif
 
     silent let project_root = rust_doc#find_rust_project_dir(a:hint)

@@ -184,10 +184,10 @@ function! rust_doc#get_identifiers(module_html_path) abort
     endif
 
     let htmls = split(glob(module_dir . '/*.*.html'), "\n")
-    return map(htmls, "{
+    return filter(map(htmls, "{
             \   'path' : v:val,
             \   'name' : matchstr(fnamemodify(v:val, ':t'), '^[^.]*\\.\\zs.\\+\\ze\\.html'),
-            \ }")
+            \ }"), "v:val.name !=# 'v' && v:val.name !=# 't'")
 endfunction
 
 function! rust_doc#get_all_module_identifiers(docs) abort

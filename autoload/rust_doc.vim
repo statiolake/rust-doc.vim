@@ -166,9 +166,9 @@ function! rust_doc#get_modules(docs) abort
     for doc in a:docs
         let paths = s:globpath(doc, '**/index.html')
         " trailing path sepalator
-        let doc = doc . pathdelim
+        let doc = doc . '/'
         let modules += map(paths, "{
-                    \   'path' : v:val,
+                    \   'path' : substitute(v:val, pathdelim, '/', 'g'),
                     \   'name' : substitute(fnamemodify(v:val, ':h')[strlen(doc) : ], pathdelim, '::', 'g'),
                     \ }")
     endfor
